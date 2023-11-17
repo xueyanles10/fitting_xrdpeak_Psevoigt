@@ -1,6 +1,3 @@
-
-
-
 ###
 The Gaussian function is possibly the best-known peak function in the whole of science since many physical and chemical processes are governed by Gaussian statistics. Translated into powder diffraction terms, the function for the intensity at any value of 2θ near the peak becomes:
 where Imax is the peak intensity, 2θ0 is the 2θ position of the peak maximum, and the integral breadth, β, is related to the FWHM peak width, H, by β = 0.5 H (π / loge2)1/2. The most important features of the Gaussian function are:
@@ -14,8 +11,6 @@ it is symmetrical
 
 def gaussian(x,2θ,β,A):
     gaussian_fun = A / (β * np.sqrt(2*np.pi))*np.exp(-0.5 *((x - 2θ)/β_1) ** 2)
-
-
 
 ###
 lorentzaian function
