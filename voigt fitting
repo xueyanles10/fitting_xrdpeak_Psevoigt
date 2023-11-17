@@ -1,0 +1,78 @@
+import lmfit
+import matplotlib.pyplot as plt
+import numpy as np
+from lmfit import report_fit
+
+data = np.loadtxt('si_2.dat')
+x = data[:, 0]
+y = data[:, 1]
+
+plt.scatter(x,y)
+
+
+
+from scipy.special import wofz
+
+# define the function for fitting
+def get_residual_Pse(pars, x, y):
+    vals = pars.valuesdict()
+    
+    center_1 = vals['center_1']
+    sigma_1 = vals['sigma_1']
+    gamma_1 = vals['gamma_1']
+    area_1 = vals['area_1']
+    
+    sigma_2 = vals['sigma_2']
+    center_2 = vals['center_2']
+    gamma_2 = vals['gamma_2']
+    area_2 = area_1/2
+    
+    z1 = ((x - center_1) + 1j * gamma_1) / (sigma_1 * np.sqrt(2))
+    voigt_1 = area_1 * np.real(wofz(z1) / (sigma_1 * np.sqrt(2 * np.pi)))   
+    
+    z2 =  ((x - center_2) + 1j * gamma_2) / (sigma_2 * np.sqrt(2))
+    voigt_2 = area_2 * np.real(wofz(z2) / (sigma_2 * np.sqrt(2 * np.pi))) 
+    
+    model = voigt_1 + voigt_2
+    
+    return model - y
+
+fit_params = lmfit.create_params(center_1 = 28.43, sigma_1 = 0.03, gamma_1 = 0.02, area_1 = 1000,center_2 = 28.50, sigma_2 = 0.02, gamma_2 = 0.02)
+out = lmfit.minimize(get_residual_Pse, fit_params, args=(x, y))
+
+
+def voigt_1_fun(center_1, sigma_1, gamma_1, area_1):
+    
+    z1 = ((x - center_1) + 1j * gamma_1) / (sigma_1 * np.sqrt(2))
+    voigt_1 = area_1 * np.real(wofz(z1) / (sigma_1 * np.sqrt(2 * np.pi)))
+    
+    return voigt_1
+
+def voigt_2_fun(center_2, sigma_2, gamma_2, area_2):
+    
+    z2 = ((x - center_2) + 1j * gamma_2) / (sigma_2 * np.sqrt(2))
+    voigt_2 = area_2 * np.real(wofz(z2) / (sigma_2 * np.sqrt(2 * np.pi)))
+    
+    return voigt_2
+
+def double_voigt_fun(center_1, sigma_1, gamma_1, area_1,center_2, sigma_2, gamma_2, area_2):
+    
+    z1 = ((x - center_1) + 1j * gamma_1) / (sigma_1 * np.sqrt(2))
+    voigt_1 = area_1 * np.real(wofz(z1) / (sigma_1))
+                               
+    z2 = ((x - center_2) + 1j * gamma_2) / (sigma_2 * np.sqrt(2))
+    voigt_2 = area_2 * np.real(wofz(z2) / (sigma_2 * np.sqrt(2 * np.pi)))
+    
+    double_voigt = voigt_1 + voigt_2
+                
+    return double_voigt
+    
+voigt_1_value = voigt_1_fun(28.4301750, 0.02582968, 0.00994054, 4045.49753)
+voigt_2_value = voigt_2_fun(28.5052449, 0.00889466, 0.02897863, 4045.49753/2)
+double_voigt_value = voigt_1_value + voigt_2_value
+
+
+plt.scatter(x,y)
+plt.plot(x,voigt_1_value,'r-')
+plt.plot(x,voigt_2_value,'g-')
+plt.plot(x,double_voigt_value,'b-')   
