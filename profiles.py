@@ -93,3 +93,20 @@ The Pearson VII function was a popular function during the 1980s and 1990s for d
 def pearson_VII_fun(x,2θ,I,m,β):
     pearson_fun = I * β ** (2 * m) / (β**2 + 2 ** (1/m)*(x-2θ)**2) ** m
     return pearson_VII_fun
+
+#The Finger–Cox–Jephcoat (FCJ) function is used to describe the pair correlation function of a fluid in statistical mechanics. It is commonly used in the context of molecular dynamics simulations. 
+def fcj_function(r, rho, a, b, c):
+    """
+    Finger–Cox–Jephcoat (FCJ) pair correlation function.
+
+    Parameters:
+    - r: Array of radial distances.
+    - rho: Number density of the fluid.
+    - a, b, c: Parameters of the FCJ function.
+
+    Returns:
+    - g(r): Pair correlation function values at each radial distance.
+    """
+    g_r = np.exp(-a*r) + b*np.exp(-c*r**2)
+    g_r *= np.exp(rho*(a + 2*c*r) / (1 + 2*c*r))
+    return g_r
